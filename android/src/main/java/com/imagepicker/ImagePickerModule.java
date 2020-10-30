@@ -71,6 +71,8 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   public static final int REQUEST_PERMISSIONS_FOR_CAMERA  = 14001;
   public static final int REQUEST_PERMISSIONS_FOR_LIBRARY = 14002;
 
+  private static final String TYPE_RESPONSE_KEY = "type";
+
   private final ReactApplicationContext reactContext;
   private final int dialogThemeId;
 
@@ -425,16 +427,20 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         break;
 
       case REQUEST_LAUNCH_VIDEO_LIBRARY:
-        responseHelper.putString("uri", data.getData().toString());
-        responseHelper.putString("path", getRealPathFromURI(data.getData()));
+        uri = data.getData();
+        responseHelper.putString("uri", uri.toString());
+        responseHelper.putString("path", getRealPathFromURI(uri));
+        responseHelper.putString(TYPE_RESPONSE_KEY, getMimeTypeFromUri(uri));
         responseHelper.invokeResponse(callback);
         callback = null;
         return;
 
       case REQUEST_LAUNCH_VIDEO_CAPTURE:
-        final String path = getRealPathFromURI(data.getData());
-        responseHelper.putString("uri", data.getData().toString());
+        uri = data.getData();
+        final String path = getRealPathFromURI(uri);
+        responseHelper.putString("uri", uri.toString());
         responseHelper.putString("path", path);
+        responseHelper.putString(TYPE_RESPONSE_KEY, getMimeTypeFromUri(uri));
         fileScan(reactContext, path);
         responseHelper.invokeResponse(callback);
         callback = null;
@@ -651,6 +657,15 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   @Nullable
   private String getRealPathFromURI(@NonNull final Uri uri) {
     return RealPathUtil.getRealPathFromURI(reactContext, uri);
+  }
+
+  @Nullable
+  private String getMimeTypeFromUri(@NonNull final Uri uri) {
+    try {
+      return reactContext.getContentResolver().getType(uri);
+    } catch (Throwable ignore) {
+      return null;
+    }
   }
 
   /**
