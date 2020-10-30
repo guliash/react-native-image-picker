@@ -118,9 +118,13 @@ public class RealPathUtil {
 	 * @param selectionArgs (Optional) Selection arguments used in the query.
 	 * @return The value of the _data column, which is typically a file path.
 	 */
+	@Nullable
 	public static String getDataColumn(Context context, Uri uri, String selection,
 	                                   String[] selectionArgs) {
-
+		//Data column is deprecated on 29+.
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+			return null;
+		}
 		Cursor cursor = null;
 		final String column = "_data";
 		final String[] projection = {

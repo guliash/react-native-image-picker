@@ -648,7 +648,8 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
       || reactContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
   }
 
-  private @NonNull String getRealPathFromURI(@NonNull final Uri uri) {
+  @Nullable
+  private String getRealPathFromURI(@NonNull final Uri uri) {
     return RealPathUtil.getRealPathFromURI(reactContext, uri);
   }
 
